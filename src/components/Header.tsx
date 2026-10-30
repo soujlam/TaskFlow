@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, onToggleTheme, pendingCou
         ) : (
           <div className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Dia livre de pendências</span>
+            <span>Sem pendências ativas</span>
           </div>
         )}
 

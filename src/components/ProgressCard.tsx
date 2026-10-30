@@ -12,9 +12,9 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({ total, completed, pe
 
   const getMotivationalMessage = () => {
     if (total === 0) return 'Sua lista está limpa. Adicione uma atividade para começar.';
-    if (percentage === 100) return 'Parabéns! Todas as tarefas foram concluídas hoje.';
+    if (percentage === 100) return 'Parabéns! Todas as tarefas foram concluídas com sucesso.';
     if (percentage >= 60) return 'Reta final! Mais da metade concluída com sucesso.';
-    if (percentage > 0) return 'Bom ritmo! Continue focado para finalizar suas metas.';
+    if (percentage > 0) return 'Bom ritmo! Continue avançando para finalizar suas atividades.';
     return 'Dê o primeiro passo marcando sua primeira atividade concluída.';
   };
 
@@ -23,7 +23,7 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({ total, completed, pe
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-rose-500 dark:text-rose-400">
-            Progresso do Dia
+            Progresso das Tarefas
           </span>
           <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
             {getMotivationalMessage()}

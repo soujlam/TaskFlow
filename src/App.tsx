@@ -155,7 +155,7 @@ export default function App() {
                       Sua lista está limpa
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Você ainda não possui nenhuma atividade cadastrada. Digite algo no campo acima para começar seu dia produtivo.
+                      Você ainda não possui nenhuma atividade cadastrada. Digite algo no campo acima para começar a organizar suas tarefas.
                     </p>
                   </div>
                 ) : statusFilter === 'pendentes' && counts.pending === 0 ? (
