@@ -21,25 +21,37 @@ Acesse o aplicativo em produção diretamente no GitHub Pages:
 ## ✨ Funcionalidades e Diferenciais de UX
 
 - **⚡ Entrada Rápida de Tarefas**:
-  - Cadastro ágil com suporte à tecla <kbd>Enter</kbd>.
+  - Cadastro ágil com suporte à tecla <kbd>Enter</kbd> ou atalho global <kbd>N</kbd>.
   - Seleção prévia de prioridades (**Alta**, **Média** ou **Baixa**) com paleta de cores semântica.
+- **🏷️ Categorias & Etiquetas (Tags)**:
+  - Organização por categorias (*Trabalho*, *Pessoal*, *Estudos*, *Finanças*, *Saúde*, *Outros*).
+  - Filtro dedicado por categoria na barra de busca e visualização com tags coloridas e elegantes.
+- **📅 Prazos e Datas de Vencimento**:
+  - Seletor rápido de prazos (*Hoje*, *Amanhã* ou data específica).
+  - Alertas contextuais com contagem regressiva e aviso pulsante em vermelho para tarefas **Atrasadas**.
+  - Ordenação automática por data de vencimento.
 - **📊 Cartão de Progresso em Tempo Real**:
   - Barra de progresso dinâmica com percentual de conclusão.
   - Mensagens motivacionais baseadas no seu ritmo de conclusão.
 - **🔍 Filtros e Busca Inteligente**:
   - Filtro por status: *Todas*, *Pendentes* e *Concluídas* (com contadores em tempo real).
-  - Filtro por nível de prioridade.
-  - Campo de busca instantânea com botão de limpeza rápida.
-  - Ordenação por *Mais recente*, *Mais antiga* ou *Por prioridade*.
+  - Filtro por prioridade e por categoria.
+  - Campo de busca instantânea com suporte ao atalho global <kbd>/</kbd> e botão de limpeza rápida.
+  - Ordenação por *Mais recente*, *Mais antiga*, *Maior prioridade* ou *Data de vencimento*.
 - **✏️ Edição Direta (Inline)**:
   - Duplo clique no texto de qualquer tarefa ou clique no ícone de lápis para editar na hora.
   - Salvamento automático ao pressionar <kbd>Enter</kbd> ou ao clicar fora (<kbd>blur</kbd>).
 - **🛡️ Recuperação de Exclusão (Undo Toast)**:
   - Notificação flutuante com temporizador de 6 segundos permitindo **Desfazer** exclusões acidentais com um único clique.
+- **💾 Backup & Restauração (Exportar / Importar)**:
+  - Exporte e importe suas tarefas em arquivos `.json` com um clique no cabeçalho.
+- **⌨️ Atalhos de Teclado**:
+  - Pressione <kbd>N</kbd> para ir direto ao campo de criação de tarefa.
+  - Pressione <kbd>/</kbd> para buscar rapidamente entre suas tarefas.
 - **🌓 Modo Claro e Escuro (Dark/Light)**:
   - Alternância de tema com um clique e detecção automática da preferência do sistema operacional.
   - Persistência das preferências visuais no navegador.
-- **💾 100% Offline e Seguro**:
+- **🔒 100% Offline e Seguro**:
   - Todos os dados são sincronizados no `localStorage` do seu navegador. Seus dados nunca saem do seu dispositivo.
 
 ---

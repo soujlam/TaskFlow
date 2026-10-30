@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTasks } from './hooks/useTasks';
 import { useTheme } from './hooks/useTheme';
 import { Header } from './components/Header';
@@ -7,7 +7,7 @@ import { TaskInput } from './components/TaskInput';
 import { TaskFilterBar } from './components/TaskFilterBar';
 import { TaskItem } from './components/TaskItem';
 import { UndoToast } from './components/UndoToast';
-import { FilterStatus, PriorityLevel, SortOrder, Task } from './types';
+import { FilterStatus, PriorityLevel, SortOrder, Task, TaskCategory } from './types';
 import { CheckSquare2, Inbox, PlusCircle, SearchX } from 'lucide-react';
 
 export default function App() {
@@ -23,12 +23,38 @@ export default function App() {
     clearCompleted,
     editTaskTitle,
     updateTaskPriority,
+    importTasks,
   } = useTasks();
 
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('todas');
   const [priorityFilter, setPriorityFilter] = useState<PriorityLevel | 'todas'>('todas');
+  const [categoryFilter, setCategoryFilter] = useState<TaskCategory | 'todas'>('todas');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<SortOrder>('recente');
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Global Keyboard Shortcuts (Press '/' for search, 'n' for new task)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeTag = (document.activeElement?.tagName || '').toLowerCase();
+      const isInputFocused = activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select';
+
+      if (!isInputFocused) {
+        if (e.key === '/') {
+          e.preventDefault();
+          searchInputRef.current?.focus();
+        } else if (e.key === 'n' || e.key === 'N') {
+          e.preventDefault();
+          const taskInput = document.querySelector<HTMLInputElement>('input[placeholder*="O que você precisa"]');
+          taskInput?.focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Counts
   const counts = useMemo(() => {
@@ -51,12 +77,25 @@ export default function App() {
         // Priority filter
         if (priorityFilter !== 'todas' && task.priority !== priorityFilter) return false;
 
+        // Category filter
+        if (categoryFilter !== 'todas' && task.category !== categoryFilter) return false;
+
         // Search query
         if (query && !task.title.toLowerCase().includes(query)) return false;
 
         return true;
       })
       .sort((a, b) => {
+        // Sort by Due Date
+        if (sortOrder === 'vencimento') {
+          if (a.dueDate && b.dueDate) {
+            return a.dueDate.localeCompare(b.dueDate);
+          }
+          if (a.dueDate && !b.dueDate) return -1;
+          if (!a.dueDate && b.dueDate) return 1;
+          return b.createdAt - a.createdAt;
+        }
+
         // Primary sort
         if (sortOrder === 'recente') {
           return b.createdAt - a.createdAt;
@@ -72,7 +111,7 @@ export default function App() {
         }
         return 0;
       });
-  }, [tasks, statusFilter, priorityFilter, searchQuery, sortOrder]);
+  }, [tasks, statusFilter, priorityFilter, categoryFilter, searchQuery, sortOrder]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
@@ -86,6 +125,8 @@ export default function App() {
           theme={theme}
           onToggleTheme={toggleTheme}
           pendingCount={counts.pending}
+          tasks={tasks}
+          onImportTasks={importTasks}
         />
 
         {/* Content Body */}
@@ -115,16 +156,19 @@ export default function App() {
               onChangeStatusFilter={setStatusFilter}
               priorityFilter={priorityFilter}
               onChangePriorityFilter={setPriorityFilter}
+              categoryFilter={categoryFilter}
+              onChangeCategoryFilter={setCategoryFilter}
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               sortOrder={sortOrder}
               onChangeSortOrder={setSortOrder}
               counts={counts}
               onClearCompleted={clearCompleted}
+              searchInputRef={searchInputRef}
             />
           </section>
 
-          {/* Core Features 2 & 3: Task List (Mark completed & Remove) */}
+          {/* Core Features: Task List */}
           <section aria-labelledby="task-list-heading" className="pt-2">
             <h2 id="task-list-heading" className="sr-only">
               Lista de tarefas
@@ -197,6 +241,7 @@ export default function App() {
                       onClick={() => {
                         setSearchQuery('');
                         setPriorityFilter('todas');
+                        setCategoryFilter('todas');
                         setStatusFilter('todas');
                       }}
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 rounded-xl transition-colors cursor-pointer"
@@ -210,18 +255,18 @@ export default function App() {
           </section>
         </main>
 
-        {/* Quiet Footer with Unboxed Metadata */}
+        {/* Quiet Footer with Shortcuts and Metadata */}
         <footer className="mt-12 pt-6 border-t border-slate-200/60 dark:border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400 dark:text-slate-500">
           <div className="flex items-center gap-2">
             <span>TarefasFlow</span>
             <span aria-hidden="true">·</span>
             <span>Armazenado localmente</span>
             <span aria-hidden="true">·</span>
-            <span>Privado &amp; Rápido</span>
+            <span>100% Offline &amp; Privado</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span>Dica: Duplo clique para editar texto</span>
+          <div className="flex items-center gap-3">
+            <span>Atalhos: <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px]">N</kbd> nova tarefa · <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px]">/</kbd> busca</span>
           </div>
         </footer>
       </div>

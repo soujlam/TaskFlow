@@ -1,12 +1,14 @@
 import React from 'react';
-import { Search, X, Trash2, ArrowUpDown } from 'lucide-react';
-import { FilterStatus, PriorityLevel, SortOrder } from '../types';
+import { Search, X, Trash2, ArrowUpDown, Tag } from 'lucide-react';
+import { FilterStatus, PriorityLevel, SortOrder, TaskCategory } from '../types';
 
 interface TaskFilterBarProps {
   statusFilter: FilterStatus;
   onChangeStatusFilter: (status: FilterStatus) => void;
   priorityFilter: PriorityLevel | 'todas';
   onChangePriorityFilter: (priority: PriorityLevel | 'todas') => void;
+  categoryFilter: TaskCategory | 'todas';
+  onChangeCategoryFilter: (category: TaskCategory | 'todas') => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   sortOrder: SortOrder;
@@ -17,38 +19,45 @@ interface TaskFilterBarProps {
     completed: number;
   };
   onClearCompleted: () => void;
+  searchInputRef?: React.RefObject<HTMLInputElement | null>;
 }
+
+const CATEGORIES: TaskCategory[] = ['Trabalho', 'Pessoal', 'Estudos', 'Finanças', 'Saúde', 'Outros'];
 
 export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
   statusFilter,
   onChangeStatusFilter,
   priorityFilter,
   onChangePriorityFilter,
+  categoryFilter,
+  onChangeCategoryFilter,
   searchQuery,
   onSearchChange,
   sortOrder,
   onChangeSortOrder,
   counts,
   onClearCompleted,
+  searchInputRef,
 }) => {
   return (
     <div className="space-y-3">
       {/* Search and Secondary Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         {/* Search Bar */}
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
+            ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Buscar nas suas tarefas..."
+            placeholder="Buscar tarefas... (Pressione '/' para focar)"
             className="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs sm:text-sm rounded-xl pl-9 pr-8 py-2.5 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500 transition-all shadow-2xs"
           />
           {searchQuery && (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md cursor-pointer"
               aria-label="Limpar busca"
             >
               <X className="w-3.5 h-3.5" />
@@ -56,8 +65,24 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
           )}
         </div>
 
-        {/* Sort & Priority dropdowns */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Filters Group: Category, Priority, Sort Order */}
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
+          {/* Category Filter */}
+          <div className="relative">
+            <select
+              value={categoryFilter}
+              onChange={(e) => onChangeCategoryFilter(e.target.value as TaskCategory | 'todas')}
+              className="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 font-medium px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/50 cursor-pointer shadow-2xs"
+            >
+              <option value="todas">Todas categorias</option>
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Priority filter */}
           <select
             value={priorityFilter}
@@ -80,6 +105,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
               <option value="recente">Mais recentes</option>
               <option value="antiga">Mais antigas</option>
               <option value="prioridade">Maior prioridade</option>
+              <option value="vencimento">Data de vencimento</option>
             </select>
             <ArrowUpDown className="w-3 h-3 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>

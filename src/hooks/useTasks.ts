@@ -1,7 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Task, PriorityLevel, DeletedTaskSnapshot } from '../types';
+import { Task, PriorityLevel, TaskCategory, DeletedTaskSnapshot } from '../types';
 
 const STORAGE_KEY = 'tarefasflow_tasks_v1';
+
+function getTodayString(offsetDays: number = 0): string {
+  const date = new Date();
+  if (offsetDays !== 0) {
+    date.setDate(date.getDate() + offsetDays);
+  }
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
 
 const INITIAL_TASKS: Task[] = [
   {
@@ -9,13 +20,17 @@ const INITIAL_TASKS: Task[] = [
     title: 'Definir as 3 metas principais de hoje',
     completed: false,
     priority: 'alta',
+    category: 'Trabalho',
+    dueDate: getTodayString(0),
     createdAt: Date.now() - 3600000 * 2,
   },
   {
     id: 'demo-task-2',
-    title: 'Organizar pasta de trabalho e responder mensagens',
+    title: 'Revisar material de estudos e anotações',
     completed: false,
     priority: 'media',
+    category: 'Estudos',
+    dueDate: getTodayString(1),
     createdAt: Date.now() - 3600000 * 4,
   },
   {
@@ -23,6 +38,7 @@ const INITIAL_TASKS: Task[] = [
     title: 'Pausa para alongamento e hidratação',
     completed: true,
     priority: 'baixa',
+    category: 'Saúde',
     createdAt: Date.now() - 3600000 * 6,
     completedAt: Date.now() - 3600000 * 3,
   },
@@ -35,7 +51,7 @@ export function useTasks() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed;
         }
       }
@@ -57,7 +73,12 @@ export function useTasks() {
     }
   }, [tasks]);
 
-  const addTask = useCallback((title: string, priority: PriorityLevel = 'media'): boolean => {
+  const addTask = useCallback((
+    title: string,
+    priority: PriorityLevel = 'media',
+    category?: TaskCategory,
+    dueDate?: string
+  ): boolean => {
     const trimmed = title.trim();
     if (!trimmed) return false;
 
@@ -66,6 +87,8 @@ export function useTasks() {
       title: trimmed,
       completed: false,
       priority,
+      category,
+      dueDate: dueDate || undefined,
       createdAt: Date.now(),
     };
 
@@ -150,6 +173,23 @@ export function useTasks() {
     );
   }, []);
 
+  const updateTaskCategory = useCallback((id: string, newCategory?: TaskCategory) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, category: newCategory } : t))
+    );
+  }, []);
+
+  const updateTaskDueDate = useCallback((id: string, newDueDate?: string) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, dueDate: newDueDate } : t))
+    );
+  }, []);
+
+  const importTasks = useCallback((importedTasks: Task[]) => {
+    if (!Array.isArray(importedTasks)) return;
+    setTasks(importedTasks);
+  }, []);
+
   return {
     tasks,
     addTask,
@@ -161,5 +201,8 @@ export function useTasks() {
     clearCompleted,
     editTaskTitle,
     updateTaskPriority,
+    updateTaskCategory,
+    updateTaskDueDate,
+    importTasks,
   };
 }
