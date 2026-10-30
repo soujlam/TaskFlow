@@ -1,0 +1,6 @@
+{
+  "summary":  "Plano de implementação para o aplicativo web de gestão de tarefas (TarefasFlow), contemplando adição, conclusão, remoção, prioridades, filtros dinâmicos, tema visual vibrante e suave com modo claro/escuro e persistência via LocalStorage.",
+  "updatedAt":  "2026-10-30T01:19:19.096870906Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}
